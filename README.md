@@ -49,8 +49,14 @@ Muscle-fatigue-tracker/
 │   ├── feature_extraction.py   # Feature extraction from EMG signals
 │   ├── models.py               # ML classifiers (KNN, SVM, Logistic Regression)
 │   ├── pipeline.py             # Complete training pipeline
-│   └── visualization.py        # Plotting and visualization tools
+│   ├── visualization.py        # Plotting and visualization tools
+│   └── data_loader.py          # Zenodo dataset loader and utilities
 ├── data/                        # Place your EMG datasets here
+│   ├── README.md               # Data directory documentation
+│   ├── ZENODO_DATA.md          # Zenodo dataset guide
+│   └── zenodo/                 # Zenodo dataset files (after download)
+├── examples/                    # Example scripts
+│   └── load_zenodo_data.py     # Complete Zenodo workflow example
 ├── models/                      # Saved trained models
 ├── notebooks/                   # Jupyter notebooks for exploration
 ├── tests/                       # Unit tests
@@ -161,7 +167,37 @@ for model_name, result in results.items():
 
 ## Working with Real EMG Data
 
-To use real EMG data (e.g., Cerqueira et al., 2024 dataset):
+### Using Zenodo Dataset (Record 14182446)
+
+This repository includes built-in support for the Zenodo EMG dataset:
+
+1. **Automatic Download and Loading:**
+```bash
+python examples/load_zenodo_data.py
+```
+
+2. **Programmatic Access:**
+```python
+from src.data_loader import ZenodoDataLoader
+
+# Load the Zenodo dataset
+loader = ZenodoDataLoader("14182446")
+dataset = loader.load_dataset("data/zenodo")
+
+# Use with the pipeline
+from src.pipeline import FatigueDetectionPipeline
+signals_list = [signals for signals, labels in dataset.values()]
+labels_list = [labels for signals, labels in dataset.values()]
+
+pipeline = FatigueDetectionPipeline(sampling_rate=1000)
+features_df, labels_array = pipeline.prepare_dataset(signals_list, labels_list)
+```
+
+For detailed instructions, see [data/ZENODO_DATA.md](data/ZENODO_DATA.md).
+
+### Using Other EMG Datasets
+
+To use other real EMG data (e.g., Cerqueira et al., 2024 dataset):
 
 1. Place your EMG data files in the `data/` directory
 2. Ensure data format: CSV files with EMG signal columns and fatigue labels
@@ -232,7 +268,19 @@ Key parameters to adjust:
 ## References
 
 This project is designed to work with EMG datasets such as:
+- **Zenodo Record 14182446**: EMG dataset for muscle fatigue detection. Available at: https://zenodo.org/records/14182446
 - Cerqueira, M. S., et al. (2024). Open EMG dataset with fatigue labels for muscle fatigue detection research.
+
+### Using the Zenodo Dataset
+
+To work with the Zenodo dataset (Record 14182446):
+
+```bash
+# Run the example script
+python examples/load_zenodo_data.py
+```
+
+Or see the detailed guide in [data/ZENODO_DATA.md](data/ZENODO_DATA.md).
 
 ## Contributing
 
